@@ -20,7 +20,7 @@ class RepoStats(object):
         'ahead': u'\u2B06',
         'behind': u'\u2B07',
         'staged': u'\u2714',
-        'changed': u'\u270E',
+        'changed': u'\u0394',  # u'\u270E',
         'new': u'?',
         'conflicted': u'\u273C',
         'stash': u'\u2398',
@@ -76,16 +76,16 @@ class RepoStats(object):
         return unicode_(self[_key]) if int(self[_key]) > 1 else u''
 
     def add_to_powerline(self, powerline):
-        def add(_key, fg, bg):
+        def add(_key, fg, bg, with_separator=True):
             if self[_key]:
                 s = u" {}{} ".format(self.n_or_empty(_key), self.symbols[_key])
-                powerline.append(s, fg, bg)
+                powerline.append(s, fg, bg, with_separator=with_separator)
         color = powerline.theme
-        add('ahead', color.GIT_AHEAD_FG, color.GIT_AHEAD_BG)
-        add('behind', color.GIT_BEHIND_FG, color.GIT_BEHIND_BG)
-        add('staged', color.GIT_STAGED_FG, color.GIT_STAGED_BG)
-        add('changed', color.GIT_NOTSTAGED_FG, color.GIT_NOTSTAGED_BG)
-        add('new', color.GIT_UNTRACKED_FG, color.GIT_UNTRACKED_BG)
+        add('ahead', color.GIT_AHEAD_FG, color.GIT_AHEAD_BG, with_separator=False)
+        add('behind', color.GIT_BEHIND_FG, color.GIT_BEHIND_BG, with_separator=False)
+        add('staged', color.GIT_STAGED_FG, color.GIT_STAGED_BG, with_separator=False)
+        add('changed', color.GIT_NOTSTAGED_FG, color.GIT_NOTSTAGED_BG, with_separator=False)
+        add('new', color.GIT_UNTRACKED_FG, color.GIT_UNTRACKED_BG, with_separator=False)
         add('conflicted', color.GIT_CONFLICTED_FG, color.GIT_CONFLICTED_BG)
 
 

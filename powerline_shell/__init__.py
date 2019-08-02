@@ -114,11 +114,12 @@ class Powerline(object):
     def bgcolor(self, code):
         return self.color('48', code)
 
-    def append(self, content, fg, bg, separator=None, separator_fg=None, sanitize=True):
+    def append(self, content, fg, bg, with_separator=True, separator=None, separator_fg=None, sanitize=True):
         if self.args.shell == "bash" and sanitize:
             content = re.sub(r"([`$])", r"\\\1", content)
+        separator_str = separator if with_separator else ''
         self.segments.append((content, fg, bg,
-            separator if separator is not None else self.separator,
+            separator_str if separator_str is not None else self.separator,
             separator_fg if separator_fg is not None else bg))
 
     def draw(self):

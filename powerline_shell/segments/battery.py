@@ -8,12 +8,12 @@ class ChargeState:
         self.name = name
         self.glyph = parent.powerline.segment_conf("battery", name, glyph)
 
-GLYPH_FULL = u"\U0001F50C "
-GLYPH_CHARGING = u"\u26A1"
-GLYPH_DISCHARGING = u"\u2301"
+GLYPH_FULL = u"\u2714\u0020"
+GLYPH_CHARGING = "+ "
+GLYPH_DISCHARGING = "- "
 
-GLYPH_BATT = u"\u2393"
-GLYPH_WALL = u"\u23E6"
+GLYPH_BATT = ""
+GLYPH_WALL = ""
 
 class Segment(BasicSegment):
     def __init__(self, powerline, segment_def):
@@ -29,7 +29,7 @@ class Segment(BasicSegment):
         }
         self.charge_state["full"] = self.charge_state["charged"]
         self.battery_state = {"":"", "battery":GLYPH_BATT, "ac":GLYPH_WALL}
-    
+
     def add_to_powerline(self):
         # See discussion in https://github.com/banga/powerline-shell/pull/204
         # regarding the directory where battery info is saved
@@ -44,7 +44,7 @@ class Segment(BasicSegment):
             #add support for other operating systems here
             warn("battery directory could not be found")
             return
-    
+
     def low_battery_threshold(self):
         '''
         gets the user configured threshold for low battery mode
@@ -53,7 +53,7 @@ class Segment(BasicSegment):
         raw = self.powerline.segment_conf("battery","low",LOW_BATTERY_THRESHOLD)
         lbt = raw if 0<raw and raw<100 else LOW_BATTERY_THRESHOLD
         return lbt
-    
+
     def handle_sys_class(self, dir_):
         '''
         Pull the batter info from the supplied proc file and send to powerline
@@ -66,20 +66,20 @@ class Segment(BasicSegment):
             status = f.read().strip()
             test = db[status] if status in charge_state else status
         self.display(status, cap)
-    
+
     def handle_pmset(self):
         '''
-        mac os x has pmset, but don't assume mac since all of Darwin could be 
+        mac os x has pmset, but don't assume mac since all of Darwin could be
         using this tool.
         '''
         status = ""         # [charged|discharging|charging|finishing charge]
         cap = -1            # capacity 0-100 as a string, -1 on error
         source = "unknown"  # one of [battery|power]
-        
+
         cmd = ["/usr/bin/pmset", "-g", "batt"]
         proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
         lines = proc.communicate()[0].decode("utf-8").split("\n")
-        
+
         for raw in lines:
             line = raw.strip()
             if "Now drawing from" in line:
@@ -95,7 +95,7 @@ class Segment(BasicSegment):
                     status = m.group(1).strip()
                 break
         self.display(status, cap, source)
-    
+
     def display(self, raw_status, raw_cap, raw_source="unknown"):
         '''
         sends formated text to powerline, displays lots of things when needed
@@ -128,7 +128,7 @@ class Segment(BasicSegment):
         else:
             bg = self.powerline.theme.BATTERY_NORMAL_BG
             fg = self.powerline.theme.BATTERY_NORMAL_FG
-        
+
         '''
         if status == "Full":
             if self.powerline.segment_conf("battery", "always_show_percentage", False):
@@ -154,5 +154,5 @@ class Segment(BasicSegment):
                     format = "{src:s} {pow:s}"
         else:
             pwr = u"?"  #unknown state
-        
+
         self.powerline.append(format.format(src=src, cap=cap, pow=pwr), fg, bg)
