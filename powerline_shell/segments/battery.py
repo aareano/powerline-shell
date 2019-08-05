@@ -8,7 +8,7 @@ class ChargeState:
         self.name = name
         self.glyph = parent.powerline.segment_conf("battery", name, glyph)
 
-GLYPH_FULL = u"\u2714\u0020"
+GLYPH_FULL = ""
 GLYPH_CHARGING = "+ "
 GLYPH_DISCHARGING = "- "
 
